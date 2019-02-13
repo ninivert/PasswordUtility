@@ -40,28 +40,27 @@
 			<p>Choose a complicated passphrase (it may include spaces and special characters). The longer, the better!</p>
 
 			<div class="row">
-				<div class="col-sm-12">
+				<div class="col-lg-4">
 					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text">Passphrase</span>
+						</div>
 						<input type="text" class="form-control" id="passphrase" placeholder="Enter a secure passphrase" required>
 					</div>
 				</div>
 
-				<div class="col-sm-6">
+				<div class="col-lg-4">
 					<div class="input-group">
-						<input type="text" class="form-control" id="plaintext" placeholder="Plain text">
-						<div class="input-group-append">
-							<button class="btn btn-primary" id="encrypt">Encrypt</button>
+						<div class="input-group-prepend">
+							<span class="input-group-text">Text</span>
 						</div>
+						<input type="text" class="form-control" id="text" placeholder="Text to encrypt or decrypt" required>
 					</div>
 				</div>
 
-				<div class="col-sm-6">
-					<div class="input-group">
-						<input type="text" class="form-control" id="cyphertext" placeholder="Cyphertext">
-						<div class="input-group-append">
-							<button class="btn btn-primary" id="decrypt">Decrypt</button>
-						</div>
-					</div>
+				<div class="col-lg-4">
+					<button class="btn btn-success" id="encrypt">Encrypt</button>
+					<button class="btn btn-info" id="decrypt">Decrypt</button>
 				</div>
 			</div>
 		</section>
@@ -99,7 +98,7 @@
 			}
 
 			// Get plain text
-			var plaintext = document.getElementById("plaintext").value;
+			var plaintext = document.getElementById("text").value;
 			if (plaintext === "") {
 				alert("Plain text may not be empty.");
 				return false;
@@ -107,10 +106,7 @@
 
 			// Encrypt
 			var encrypted = CryptoJS.AES.encrypt(plaintext, passphrase);
-			document.getElementById("cyphertext").value = encrypted.toString();
-
-			// Notify the user something has happenend
-			flash(document.getElementById("cyphertext"));
+			document.getElementById("text").value = encrypted.toString();
 		});
 
 		document.getElementById("decrypt").addEventListener("click", function() {
@@ -122,7 +118,7 @@
 			}
 
 			// Get cyphertext
-			var cyphertext = document.getElementById("cyphertext").value;
+			var cyphertext = document.getElementById("text").value;
 			if (cyphertext === "") {
 				alert("Cyphertext may not be empty.");
 				return false;
@@ -130,21 +126,10 @@
 
 			// Encrypt
 			var decrypted = CryptoJS.AES.decrypt(cyphertext, passphrase);
-			document.getElementById("plaintext").value = decrypted.toString(CryptoJS.enc.Utf8);
-
-			// Notify the user something has happenend
-			flash(document.getElementById("plaintext"));
+			document.getElementById("text").value = decrypted.toString(CryptoJS.enc.Utf8);
 		});
 
-		document.getElementById("plaintext").addEventListener("click", select);
-		document.getElementById("cyphertext").addEventListener("click", select);
-
-		function flash(element) {
-			element.classList.add("flash");
-			setTimeout((function(element) {
-				element.classList.remove("flash")
-			}).bind(this, element), 500);
-		}
+		document.getElementById("text").addEventListener("click", select);
 
 		function select() {
 			this.setSelectionRange(0, this.value.length);
