@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Password Utility</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css">
+</head>
+
+<body>
+	<style type="text/css">
+		#generator iframe {
+			width: 100%;
+		}
+		.input-group {
+			margin-bottom: 0.5rem;
+		}
+		.flash {
+			animation: flash 0.5s ease-out;
+		}
+		@keyframes flash {
+			0% { background: transparent; }
+			50% { background: #7ed6df; }
+			100% { background: transparent; }
+		}
+	</style>
+
+	<div class="jumbotron jumbotron-fluid">
+		<div class="container">
+			<h1 class="display-4">Password Utility</h1>
+			<p class="lead">A collection of tools to help with online security</p>
+		</div>
+	</div>
+
+	<main class="container">
+		<section id="encryption">
+			<h1>Password encryption</h1>
+
+			<p>I'm using the <a href="https://cryptojs.gitbook.io/docs/">CryptoJS</a> library to encrypt passwords. The algorithm used is <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES-256</a>.</p>
+			<p>Using this method, you can write down the <i>encrypted</i> passwords securely and only remember the passphrase needed for decryption.</p>
+			<p>Choose a complicated passphrase (it may include spaces and special characters). The longer, the better!</p>
+
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="input-group">
+						<input type="text" class="form-control" id="passphrase" placeholder="Enter a secure passphrase" required>
+					</div>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="input-group">
+						<input type="text" class="form-control" id="plaintext" placeholder="Plain text">
+						<div class="input-group-append">
+							<button class="btn btn-primary" id="encrypt">Encrypt</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="input-group">
+						<input type="text" class="form-control" id="cyphertext" placeholder="Cyphertext">
+						<div class="input-group-append">
+							<button class="btn btn-primary" id="decrypt">Decrypt</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<hr>
+
+		<section id="generator">
+			<h1>Password generator</h1>
+
+			<div class="row">
+				<div class="col-lg-6">
+					<p><a href="https://www.random.org/strings/?num=1&len=16&digits=on&upperalpha=on&loweralpha=on&unique=on&format=html&rnd=new">Alphanumerical passwords</a></p>
+
+					<iframe src="https://www.random.org/strings/?num=1&len=16&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new"></iframe>
+				</div>
+
+				<div class="col-lg-6">
+					<p><a href="https://passwordsgenerator.net/?length=20&symbols=1&numbers=1&lowercase=1&uppercase=1&similar=1&ambiguous=1&client=1&autoselect=0">More complex passwords</a></p>
+
+					<iframe src="https://passwordsgenerator.net/?length=20&symbols=1&numbers=1&lowercase=1&uppercase=1&similar=1&ambiguous=1&client=1&autoselect=0" frameborder="0"></iframe>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+
+	<script type="text/javascript">
+		document.getElementById("encrypt").addEventListener("click", function() {
+			// Get passphrase
+			var passphrase = document.getElementById("passphrase").value;
+			if (passphrase === "") {
+				alert("Passphrase may not be empty.");
+				return false;
+			}
+
+			// Get plain text
+			var plaintext = document.getElementById("plaintext").value;
+			if (plaintext === "") {
+				alert("Plain text may not be empty.");
+				return false;
+			}
+
+			// Encrypt
+			var encrypted = CryptoJS.AES.encrypt(plaintext, passphrase);
+			document.getElementById("cyphertext").value = encrypted.toString();
+
+			// Notify the user something has happenend
+			flash(document.getElementById("cyphertext"));
+		});
+
+		document.getElementById("decrypt").addEventListener("click", function() {
+			// Get passphrase
+			var passphrase = document.getElementById("passphrase").value;
+			if (passphrase === "") {
+				alert("Passphrase may not be empty.");
+				return false;
+			}
+
+			// Get cyphertext
+			var cyphertext = document.getElementById("cyphertext").value;
+			if (cyphertext === "") {
+				alert("Cyphertext may not be empty.");
+				return false;
+			}
+
+			// Encrypt
+			var decrypted = CryptoJS.AES.decrypt(cyphertext, passphrase);
+			document.getElementById("plaintext").value = decrypted.toString(CryptoJS.enc.Utf8);
+
+			// Notify the user something has happenend
+			flash(document.getElementById("plaintext"));
+		});
+
+		document.getElementById("plaintext").addEventListener("click", select);
+		document.getElementById("cyphertext").addEventListener("click", select);
+
+		function flash(element) {
+			element.classList.add("flash");
+			setTimeout((function(element) {
+				element.classList.remove("flash")
+			}).bind(this, element), 500);
+		}
+
+		function select() {
+			this.setSelectionRange(0, this.value.length);
+			// document.execCommand("copy");
+		}
+	</script>
+</body>
+</html>
